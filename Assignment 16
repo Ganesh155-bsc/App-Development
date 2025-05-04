@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ImageFadeSwitcher(),
+    );
+  }
+}
+
+class ImageFadeSwitcher extends StatefulWidget {
+  const ImageFadeSwitcher({super.key});
+
+  @override
+  State<ImageFadeSwitcher> createState() => _ImageFadeSwitcherState();
+}
+
+class _ImageFadeSwitcherState extends State<ImageFadeSwitcher> {
+  bool _showFirst = true;
+
+  void _toggleImage() {
+    setState(() {
+      _showFirst = !_showFirst;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('AnimatedCrossFade'),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            AnimatedCrossFade(
+              duration: const Duration(seconds: 1),
+              firstChild: Image.network(
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXt27d0oVdyA1uFSG4b7SwMDcvaS0frjme3A&s', // Random image 1
+                width: 300,
+              ),
+              secondChild: Image.network(
+                'https://shotkit.com/wp-content/uploads/bb-plugin/cache/nature-photography-landscape-a892fa3059994f7f5119d4a53fadada3-zybravgx2q47.jpg', // Random image 2
+                width: 300,
+              ),
+              crossFadeState: _showFirst
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _toggleImage,
+              child: const Text('Switch Image'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
