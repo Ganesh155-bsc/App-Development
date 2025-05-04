@@ -7,79 +7,133 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Assignment Seven',
-      theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Convert One Currency'),
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ConCurrency(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-
-  final String title;
+class ConCurrency extends StatefulWidget {
+  const ConCurrency({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ConCurrency> createState() => _ConCurrencyState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ConCurrencyState extends State<ConCurrency> {
+  final TextEditingController _amountController = TextEditingController();
 
+  String _fromCurrency = 'Rupee';
+  String _toCurrency = 'Dollar';
+  double _convertedAmount = 0.0;
 
-  void _conversion() {
+  // Exchange rates relative to 1 USD
+  final Map<String, double> _rates = {
+    'Rupee': 83.0,
+    'Dollar': 1.0,
+    'Euro': 0.92,
+    'Yen': 155.0,
+  };
+
+  void convert() {
+    double input = double.tryParse(_amountController.text) ?? 0.0;
+
+    double fromRate = _rates[_fromCurrency]!;
+    double toRate = _rates[_toCurrency]!;
+
+    double inUSD = input / fromRate;
+    double result = inUSD * toRate;
+
     setState(() {
-
+      _convertedAmount = result;
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-
-        title: Text(widget.title),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        title: const Text('Currency Converter'),
+        centerTitle: true,
       ),
-      body: Center(
-
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-
-            SizedBox(child: DropdownMenu(hintText:'Select Item',dropdownMenuEntries:[DropdownMenuEntry(value: 'A', label: 'A')] )),
-            SizedBox(width:100,child: TextField()),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: const Text(
-                'Enter The Amount',
+          children: [
+            const SizedBox(height: 10),
+            TextField(
+              controller: _amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Enter Amount',
+                border: OutlineInputBorder(),
               ),
             ),
-            TextButton(onPressed: _conversion, child: Text('Conversion')),
-            SizedBox(width:100,child: TextField()),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: const Text('Output Currency'),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _fromCurrency,
+                    decoration: const InputDecoration(
+                      labelText: 'From',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _rates.keys
+                        .map((String currency) => DropdownMenuItem<String>(
+                      value: currency,
+                      child: Text(currency),
+                    ))
+                        .toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _fromCurrency = val!;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _toCurrency,
+                    decoration: const InputDecoration(
+                      labelText: 'To',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _rates.keys
+                        .map((String currency) => DropdownMenuItem<String>(
+                      value: currency,
+                      child: Text(currency),
+                    ))
+                        .toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _toCurrency = val!;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
-
-
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: convert,
+              child: const Text('Convert Currency'),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Converted Amount: $_convertedAmount $_toCurrency',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            )
           ],
         ),
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+
