@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FlashCardApp(),
+    );
+  }
+}
+class FlashCardApp extends StatefulWidget {
+  const FlashCardApp({super.key});
+
+  @override
+  State<FlashCardApp> createState() => _FlashCardAppState();
+}
+
+class _FlashCardAppState extends State<FlashCardApp> {
+  List<Map<String, String>> flashcards = [];
+
+
+  final questionController = TextEditingController();
+  final answerController = TextEditingController();
+
+  void _addFlashCard() {
+    String question = questionController.text.trim();
+    String answer = answerController.text.trim();
+
+    if (question.isNotEmpty && answer.isNotEmpty) {
+      setState(() {
+        flashcards.add({
+          'question': question,
+          'answer': answer,
+        });
+      });
+      questionController.clear();
+      answerController.clear();
+      Navigator.pop(context);
+    }
+  }
+  void _showAddFlashCardDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Flashcard'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: questionController,
+              decoration: const InputDecoration(labelText: 'Question'),
+            ),
+            TextField(
+              controller: answerController,
+              decoration: const InputDecoration(labelText: 'Answer'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: _addFlashCard,
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFlashCardList() {
+    return flashcards.isEmpty
+        ? const Center(child: Text('No flashcards added yet.'))
+        : ListView.builder(
+      itemCount: flashcards.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(flashcards[index]['question']!),
+          subtitle: Text(flashcards[index]['answer']!),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Flashcard App"),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildFlashCardList(),
+      ),
+      floatingActionButton: Center(
+        child: FloatingActionButton(
+          onPressed: _showAddFlashCardDialog,
+          child: const Icon(Icons.add),
+          tooltip: 'Add Flashcard',
+        ),
+      ),
+    );
+  }
+}
