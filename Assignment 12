@@ -1,0 +1,118 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Random Names App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.indigo),
+      home: HomePage(),
+      routes: {
+        '/second': (context) => SecondPage(),
+      },
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<String> names = [];
+  final List<String> allNames = [
+    'Kurban',
+    'koushik',
+    'Ramesh',
+    'Tinku',
+    'Satyendra',
+    'Ashok',
+    'Ishant',
+    'Mukesh',
+    'Richa',
+    'Suresh',
+    'Rohit',
+    'Vikram',
+    'Goutam',
+    'Vivek',
+    'Arihant'
+  ];
+
+  void generateRandomNames() {
+    allNames.shuffle();
+    setState(() {
+      names = allNames.take(10).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        title: Text('Random Name Generator'),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            ElevatedButton.icon(
+              onPressed: generateRandomNames,
+              icon: Icon(Icons.refresh),
+              label: Text('Generate Names'),
+              style: ElevatedButton.styleFrom(minimumSize: Size.fromHeight(50)),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: names.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(names[index]),
+                  );
+                },
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/second');
+              },
+              icon: Icon(Icons.arrow_forward),
+              label: Text('Go to Second Page'),
+              style: ElevatedButton.styleFrom(
+                  //backgroundColor: Colors.purpleAccent,
+                  minimumSize: Size.fromHeight(50)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SecondPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Second Page'),
+        leading: BackButton(),
+      ),
+      body: Center(
+        child: Text(
+          'Welcome to the Second Page',
+          style: TextStyle(fontSize: 22),
+        ),
+      ),
+    );
+  }
+}
