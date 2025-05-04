@@ -1,0 +1,137 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: CircleCalculator(),
+    );
+  }
+}
+
+class CircleCalculator extends StatefulWidget {
+  const CircleCalculator({super.key});
+
+  @override
+  State<CircleCalculator> createState() => _CircleCalculatorState();
+}
+
+class _CircleCalculatorState extends State<CircleCalculator> {
+  final TextEditingController _radiusController = TextEditingController();
+  String? _selectedOption;
+  String _result = '';
+
+  void _calculate() {
+    final input = _radiusController.text;
+    final radius = double.tryParse(input);
+
+    if (radius == null || radius <= 0) {
+      setState(() {
+        _result = 'Please enter a valid positive number';
+      });
+      return;
+    }
+
+    if (_selectedOption == null) {
+      setState(() {
+        _result = 'Please select an option';
+      });
+      return;
+    }
+
+    double output;
+    if (_selectedOption == 'Area') {
+      output = pi * radius * radius;
+      _result = 'Area = ${output.toStringAsFixed(2)}';
+    } else if (_selectedOption == 'Circumference') {
+      output = 2 * pi * radius;
+      _result = 'Circumference = ${output.toStringAsFixed(2)}';
+    }
+
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        title: const Text('Circle Calculator'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: _radiusController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter radius',
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 300,
+                    child: DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Select what to calculate',
+                      ),
+                      value: _selectedOption,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Area',
+                          child: Text('Area'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Circumference',
+                          child: Text('Circumference'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedOption = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: _calculate,
+                    child: const Text('Calculate'),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    _result,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
